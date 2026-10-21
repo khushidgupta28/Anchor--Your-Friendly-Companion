@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anchor – a voice companion</title>
+<style>
+  :root { --bg:#10151c; --fg:#f2f5f9; --muted:#aab4c2; --accent:#7fd1b9; --card:#1a222d; }
+  @media (prefers-color-scheme: light) { :root { --bg:#f6f8fb; --fg:#14202e; --muted:#4b5a6b; --accent:#0f7a62; --card:#fff; } }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--bg); color:var(--fg); font:20px/1.5 system-ui,sans-serif; }
+  main { width:min(92vw,460px); background:var(--card); padding:28px; border-radius:20px; }
+  h1 { margin:0 0 4px; font-size:1.7rem; } p { color:var(--muted); margin:0 0 18px; }
+  label { display:block; margin:12px 0 4px; }
+  input, select, button { width:100%; font:inherit; padding:14px; border-radius:12px; border:2px solid var(--muted); background:var(--bg); color:var(--fg); }
+  button { cursor:pointer; background:var(--accent); color:#06231b; border-color:var(--accent); font-weight:700; margin-top:14px; }
+  button.secondary { background:transparent; color:var(--fg); border-color:var(--muted); font-weight:500; }
+  :focus-visible { outline:4px solid var(--accent); outline-offset:2px; }
+  .hidden { display:none !important; }
+  #orb { width:140px; height:140px; border-radius:50%; margin:18px auto; background:var(--accent); opacity:.45; transition:.3s; }
+  #orb.listening { opacity:1; box-shadow:0 0 0 14px #7fd1b955; }
+  #orb.thinking { opacity:.8; animation:pulse 1.2s infinite; }
+  #orb.speaking { opacity:1; transform:scale(1.12); }
+  @keyframes pulse { 50% { transform:scale(.92); } }
+  #status { text-align:center; min-height:1.6em; } #error { color:#ff8a8a; min-height:1.4em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Anchor</h1>
+
+  <!-- LOGIN -->
+  <section id="auth">
+    <p>A friend to talk to, by voice.</p>
+    <form id="authForm">
+      <label for="name">Your name (only when signing up)</label>
+      <input id="name" autocomplete="given-name">
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email" required>
+      <label for="password">Password (8+ characters)</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+      <button type="submit" id="loginBtn">Log in</button>
+      <button type="button" id="signupBtn" class="secondary">Create account</button>
+    </form>
+    <div id="error" role="alert"></div>
+  </section>
+
+  <!-- VOICE SCREEN -->
+  <section id="talk" class="hidden">
+    <p id="hello">Press the big button once. After that, everything is by voice.</p>
+    <label for="mode">Mode</label>
+    <select id="mode">
+      <option value="friend">Friend – everyday chat</option>
+      <option value="calm">Calm – stress and anxiety</option>
+      <option value="support">Support – low mood</option>
+      <option value="blind">Blind / low vision</option>
+      <option value="autism">Autism-friendly</option>
+    </select>
+    <button type="button" id="incognito" class="secondary" aria-pressed="false">Incognito: off</button>
+    <div id="orb" aria-hidden="true"></div>
+    <div id="status" role="status" aria-live="polite">Ready</div>
+    <button type="button" id="start">Start talking</button>
+    <button type="button" id="logout" class="secondary">Log out</button>
+    <p style="margin-top:16px;font-size:.8rem">Voice commands: "incognito on / off", "switch to calm mode", "delete my memories", "goodbye". Anchor is a friendly companion, not a replacement for professional help.To reply, your words are processed by Gnani (speech) and Google Gemini (AI). If incognito is off, short notes about you are saved so Anchor can remember. Say "delete my memories" any time to erase them.</p>
+  </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
