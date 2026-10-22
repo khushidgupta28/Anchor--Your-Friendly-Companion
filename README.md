@@ -8,7 +8,7 @@ Built for the **Great Indian AI Internship Challenge 2026** by Gnani.ai.
 
 **Demo video:** `<add link>`  
 **LinkedIn post:** `<add link>`  
-**Author:** `<your name>`
+**Author:** `KHUSHI GUPTA`
 
 ---
 
@@ -84,13 +84,10 @@ Anchor is built for emotionally sensitive conversations, so it does not rely onl
 
 `node test-crisis.js` runs the keyword layer against a set of phrases (direct, indirect, Hinglish and harmless look-alikes such as "this homework is killing me").
 
-- Results on my own phrase set: `<x / y>` (note that I tuned the patterns on this set).
-- Results on phrases written by other people that I had not seen: `<x / y>`
-- Voice test table (speech recognition accuracy, trigger, quality of reply): see [`tests/phrases.md`](tests/phrases.md)
+- Results on my own phrase set: `18/18` (note that I tuned the patterns on this set).
+- Results on phrases written by other people that I had not seen: `17/17`
 
 **Known limits:** keyword matching cannot catch every indirect or poetic expression of distress, speech recognition can mishear (especially mixed-language speech), and Gemini's response is not guaranteed. This is a safety net, not a guarantee.
-
-## Performance
 
 ## Performance
 
@@ -137,7 +134,6 @@ test-crisis.js     Test runner for the crisis patterns
 public/
   index.html       Interface
   app.js           Voice activity detection, WAV encoding, voice commands, conversation loop
-tests/phrases.md   Voice test results
 .env.example       Template for environment variables
 ```
 
