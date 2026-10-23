@@ -1,6 +1,7 @@
 // Tier 1: clear statements. Fixed helpline is always appended.
 const STRONG_PATTERNS = [
   /\b(kill|hurt|harm|end)\s+(myself|my\s*life)\b/i,
+  /\bgone/i,
   /\bsuicid/i,
   /\bself[\s-]?harm/i,
   /\b(want|wanna|going)\s+to\s+(die|disappear)\b(?!\s+(laughing|of\b))/i,   // excludes "die laughing" / "die of embarrassment"
@@ -8,6 +9,8 @@ const STRONG_PATTERNS = [
   /\bno\s+reason\s+to\s+live\b/i,
   /\bbetter\s+off\s+(dead|without\s+me)\b/i,
   /\bwish\s+i\s+(was|were)\s+(dead|gone|never\s+born)\b/i,
+  /\bhaving\s+massive\s+panick\s+attack\b/i,
+  /\b(\s+partner|\sparents|\s+friends|\s+friend)\s+(is|are)\s+(killing|hurting|beating|)\s+me\b/i,
   /\bnever\s+wake\s+up\b/i,
   // Hinglish / Hindi
   /\b(mar\s*jana|jeena\s+nahi|jeene\s+ka\s+(mann|man)\s+nahi|khud\s*kushi|atmahatya)\b/i,
@@ -23,7 +26,11 @@ const SOFT_PATTERNS = [
   /\bcan'?t\s+(do\s+this|go\s+on|take\s+(it|this)\s+anymore)\b/i,
   /\bno\s+point\s+(in\s+)?(anything|living|going\s+on)\b/i,
   /\bsab\s+khatam\b/i,
-  /\bthak\s+gaya\s+hu(n)?\s+(sab|zindagi)/i
+  /\bthak\s+gaya\s+hu(n)?\s+(sab|zindagi)/i,
+  /\bMy(\s+partner|\sparents|\s+friends|\s+friend)\s+(is|are)\s+(leaving|cheating|betraying|\s+(going|go|went|gone)\s+away)/i,
+  /\bI\s+don't\s+feel\s+safe\s+(in|at)\s+my\s+own\s+(home|house|this\s+place|anywhere)\b/i,
+  /\bI\s+can't\s+breath\s+and\s+my\s+chest\s+feels\s+soo\s+heavy\b/i,
+  /\bgoing\s+crazy\b/i,
 ];
 
 const isCrisis = (t) => STRONG_PATTERNS.some(p => p.test(String(t)));
