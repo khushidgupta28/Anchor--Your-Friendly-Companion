@@ -20,6 +20,13 @@ const cases = [
   ["I want to die laughing", "none"],
   ["I had a great day today", "none"],
   ["aaj mera mood bahut accha hai", "none"],
+  ["Would anyone care if I was gone?", "strong"],
+  ["My partner is leaving me", "soft"],
+  ["My partner is hurting me", "strong"],
+  ["I don't feel safe at my own house","soft"],
+  ["I can't breath and my chest feels soo heavy","soft"],
+  ["I think i'm going crazy", "soft"],
+  ["I think I am having massive panick attack","strong"],
 ];
 
 const tier = (t) => isCrisis(t) ? "strong" : isConcerning(t) ? "soft" : "none";
