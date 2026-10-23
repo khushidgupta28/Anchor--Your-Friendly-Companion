@@ -4,6 +4,18 @@ let mode = 'friend', incognito = false, history = [];
 let running = false, state = 'idle', pendingForget = false, userName = '';
 let ctx, stream, proc;
 
+let fillerTimer = null, fillerPlaying = null, fillerUrls = [];
+const FILLERS = ['Hmm...', 'Let me think...', 'One sec...'];
+
+async function prepFillers() {
+  fillerUrls = (await Promise.all(FILLERS.map(f => fetchAudio(f, 1)))).filter(Boolean);
+}
+function playFiller() {
+  if (!fillerUrls.length) return;
+  const a = new Audio(fillerUrls[Math.floor(Math.random() * fillerUrls.length)]);
+  fillerPlaying = new Promise(res => { a.onended = res; a.onerror = res; a.play().catch(res); });
+}
+
 // ---------- auth ----------
 async function api(url, opts = {}) {
   const r = await fetch(url, opts);
@@ -115,15 +127,20 @@ async function handle(parts) {
     if (!text || !text.trim()) return listen();
     if (await command(text.trim())) return running ? listen() : null;
 
+    fillerTimer = setTimeout(playFiller, 2500);
     const cr = await api('/api/chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, mode, incognito, history: incognito ? history : [] }),
+      body: JSON.stringify({ text, mode, incognito, history }),
     });
     const j = await cr.json();
+    clearTimeout(fillerTimer);
+    if (fillerPlaying) { await fillerPlaying; fillerPlaying = null; }
     if (!cr.ok) throw new Error(j.error);
-    if (incognito) history.push({ role: 'user', content: text }, { role: 'assistant', content: j.reply });
+    history.push({ role: 'user', content: text }, { role: 'assistant', content: j.reply });
+    history = history.slice(-8);
     await say(j.reply, j.speed);
   } catch (e) {
+    clearTimeout(fillerTimer);
     if (e.message === 'auth') return;
     await say("Hmm, I'm having trouble on my side. Give me a moment and say that again");
   }
@@ -174,6 +191,7 @@ async function start() {
   proc.onaudioprocess = onFrame;
   src.connect(proc); proc.connect(ctx.destination);
   running = true; $('#start').classList.add('hidden');
+  prepFillers();   // pre-generate filler audio so it plays instantly
   const names = { friend: 'friend', calm: 'calm', support: 'support', blind: 'blind and low vision', autism: 'autism-friendly' };
   await say(`Hi${userName ? ' ' + userName : ''}, I'm Anchor. I'm here and I'm listening. We're in ${names[mode]} mode. You can say incognito on, or switch to another mode, any time.`);
   listen();
