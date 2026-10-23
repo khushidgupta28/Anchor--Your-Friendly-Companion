@@ -165,50 +165,51 @@ function toContents(messages) {
 
 const FALLBACK_MODEL = process.env.GEMINI_FALLBACK_MODEL || 'gemini-3.6-flash';
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-let useThinkingCfg = true;
+let useThinkingCfg = false;
+
+async function callGemini(model, sys, messages, max_tokens, temperature, signal) {
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
+        body: JSON.stringify({
+            systemInstruction: { parts: [{ text: sys }] },
+            contents: toContents(messages),
+            generationConfig: { maxOutputTokens: max_tokens, temperature }
+        }),
+        signal
+    });
+    const j = await r.json();
+    if (!r.ok) throw new Error(`${model}: ${j.error?.message || 'Gemini error'}`);
+    const text = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
+    if (!text) throw new Error(`${model}: empty reply`);
+    return { text, model };
+}
 
 async function gemini(systemInstruction, messages, max_tokens = 300, temperature = 0.9) {
-    const models = [GEMINI_MODEL, FALLBACK_MODEL];
-    let lastErr;
+    const sys = Array.isArray(systemInstruction)
+        ? systemInstruction.filter(Boolean).join('\n\n')
+        : String(systemInstruction || '');
+    const models = [...new Set([GEMINI_MODEL, FALLBACK_MODEL])];
 
-    for (const model of models) {
-        for (let attempt = 0; attempt < 2; attempt++) {
-            const generationConfig = { maxOutputTokens: Math.max(max_tokens, 1024), temperature };
-            if (useThinkingCfg) generationConfig.thinkingConfig = { thinkingLevel: 'minimal' };
-
-            const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
-                body: JSON.stringify({
-                    systemInstruction: { parts: [{ text: systemInstruction }] },
-                    contents: toContents(messages),
-                    generationConfig
-                })
-            });
-            const j = await r.json();
-
-            if (r.ok) {
-                const text = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('').trim();
-                if (text) return text;
-                lastErr = new Error('Empty reply from Gemini');
-                continue;
-            }
-
-            const msg = j.error?.message || JSON.stringify(j);
-            console.error(`GEMINI ERROR (${model}, try ${attempt + 1}):`, msg);
-            lastErr = new Error(msg);
-
-            if (r.status === 400 && /thinking/i.test(msg) && useThinkingCfg) {
-                useThinkingCfg = false;   // this model doesn't accept that setting, drop it and retry
-                attempt--;
-                continue;
-            }
-            if (r.status === 404 || /no longer available/i.test(msg)) break;   // dead model, go to fallback
-            if (![429, 500, 503].includes(r.status)) throw lastErr;
+    for (let round = 1; round <= 2; round++) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 9000);   // generous: only gives up on truly stuck requests
+        try {
+            const winner = await Promise.any(
+                models.map(m => callGemini(m, sys, messages, Math.max(max_tokens, 1024), temperature, controller.signal))
+            );
+            clearTimeout(timer);
+            controller.abort();   // cancel the slower request
+            console.log(`GEMINI ok: winner=${winner.model}, round=${round}`);
+            return winner.text;
+        } catch (e) {
+            clearTimeout(timer);
+            const why = e.errors ? e.errors.map(x => x.message).join(' | ') : e.message;
+            console.error(`GEMINI round ${round} failed:`, why);
             await sleep(300);
         }
     }
-    throw lastErr;
+    throw new Error('Gemini is busy right now');
 }
 // ---------------------------------------------------------------
 // Friend personality + modes
