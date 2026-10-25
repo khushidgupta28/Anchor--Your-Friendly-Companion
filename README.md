@@ -6,7 +6,7 @@ Anchor is a voice-first friend you can talk to in English, Hindi or Hinglish. It
 
 Built for the **Great Indian AI Internship Challenge 2026** by Gnani.ai.
 
-**Demo video:** `<add link>`  
+**Demo video:** `https://drive.google.com/file/d/1xAOPpgmSex1OsaPGLHH1AzwtjJs9pFab/view?usp=drivesdk` 
 **LinkedIn post:** `<add link>`  
 **Author:** `KHUSHI GUPTA`
 
@@ -107,8 +107,7 @@ Full measurements over 20 turns will be added.
 Requirements: Node.js 18 or newer, a Gnani API key, a Google Gemini API key.
 
 ```bash
-git clone <your-repo-url>
-cd <repo-folder>
+git clone https://github.com/khushidgupta28/Anchor--Your-Friendly-Companion
 npm install
 cp .env.example .env      # on Windows: copy .env.example .env
 # edit .env and fill in your keys
