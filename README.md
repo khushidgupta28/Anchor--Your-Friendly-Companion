@@ -7,6 +7,7 @@ Anchor is a voice-first friend you can talk to in English, Hindi or Hinglish. It
 Built for the **Great Indian AI Internship Challenge 2026** by Gnani.ai.
 
 **Demo video:** `https://drive.google.com/file/d/1xAOPpgmSex1OsaPGLHH1AzwtjJs9pFab/view?usp=drivesdk` 
+
 **LinkedIn post:** `<add link>`  
 **Author:** `KHUSHI GUPTA`
 
