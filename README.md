@@ -8,7 +8,8 @@ Built for the **Great Indian AI Internship Challenge 2026** by Gnani.ai.
 
 **Demo video:** `https://drive.google.com/file/d/1xAOPpgmSex1OsaPGLHH1AzwtjJs9pFab/view?usp=drivesdk` 
 
-**LinkedIn post:** `<add link>`  
+**LinkedIn post:** `https://www.linkedin.com/posts/khushi-gupta-411019382_greatindianaiinternshipchallenge-gnaniai-ugcPost-7520408871471874048-cWs5/?utm_source=share&utm_medium=member_android&rcm=ACoAAF5UsA0BekusPiR2TNqckkzdaYCiVHBLGxk`
+  
 **Author:** `KHUSHI GUPTA`
 
 ---
@@ -92,16 +93,23 @@ Anchor is built for emotionally sensitive conversations, so it does not rely onl
 
 ## Performance
 
-Tested on Airtel mobile data (4G/5G), not a fixed broadband line, to reflect real-world conditions.
+Measured on Airtel mobile data (not fixed broadband), over three testing sessions.
 
-| Step | Result |
-|---|---|
-| Speech to text (Gnani Prisma) | about 0.15 s (as reported by the Gnani API) |
-| Reply generation (Gemini) | being optimised |
-| Text to speech (Gnani Timbre) | to be measured |
-| Wait after you stop speaking | 800 ms (configurable) |
+| Step | Result | Sample |
+|---|---|---|
+| Speech to text (Gnani Prisma) | 0.06 to 0.17 s processing; 0.07 to 0.45 s end to end, typically 0.1 to 0.2 s (as reported by the Gnani API) | all logged calls |
+| Reply generation (Gemini) | median 1.9 s, mean 2.8 s, range 1.1 to 6.6 s | 41 replies |
+| Text to speech (Gnani Timbre) | median 1.3 s per sentence clip, range 0.8 to 3.4 s | 29 clips |
+| Silence wait before processing | SILENCE_MS ms (configurable) | n/a |
+| **Total: end of speech to first audio** | **median 4.9 s, mean 5.6 s, range 3.5 to 10.1 s** | 36 turns |
 
-Full measurements over 20 turns will be added.
+Median by session: 5.9 s, 4.7 s and 5.3 s, so results vary noticeably between sessions on mobile data.
+
+Notes:
+- One measurement of about 11 minutes was excluded as a measurement error (the tab or laptop was paused).
+- The first four voice clips in the last session were slower (2.2 to 3.4 s) because the greeting and filler phrases queued behind each other at startup. Excluding them, the median is 1.3 s and the range 0.8 to 2.1 s.
+- Gemini latency varied a lot, so the server sends each request to two models at once and uses whichever answers first, with a timeout and retry.
+- Gnani TTS allows one active request at a time, so the server queues voice requests.
 
 ## Run it locally
 
